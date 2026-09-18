@@ -1,0 +1,571 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<style>html,body{margin:0;}</style>
+<title>Policy Assistant Notebook</title>
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Sora:wght@500;600;700;800&family=IBM+Plex+Sans:wght@400;500;600&family=IBM+Plex+Mono:wght@400;500;600&display=swap">
+<style>
+  :root{
+    --bg:#F4F5F7;
+    --surface:#FFFFFF;
+    --surface-2:#ECEEF3;
+    --ink:#1B2430;
+    --ink-soft:#5B6473;
+    --accent:#3457D5;
+    --accent-soft:#E7ECFB;
+    --accent-ink:#1F3AA8;
+    --good:#1B8A5A;
+    --good-soft:#E4F5EC;
+    --warn:#B45309;
+    --warn-soft:#FBEEDD;
+    --code-bg:#12161F;
+    --code-ink:#D8E0F0;
+    --code-accent:#8FB2FF;
+    --border:#D8DCE4;
+    --shadow: 0 1px 2px rgba(27,36,48,.06), 0 8px 24px -12px rgba(27,36,48,.20);
+    --font-display:'Sora',system-ui,-apple-system,sans-serif;
+    --font-body:'IBM Plex Sans',system-ui,-apple-system,sans-serif;
+    --font-mono:'IBM Plex Mono',ui-monospace,SFMono-Regular,Menlo,monospace;
+  }
+  @media (prefers-color-scheme: dark){
+    :root:not([data-theme="light"]){
+      --bg:#12141A;
+      --surface:#1B1F29;
+      --surface-2:#222736;
+      --ink:#E7E9EE;
+      --ink-soft:#9AA3B2;
+      --accent:#7C9BFF;
+      --accent-soft:#242B44;
+      --accent-ink:#C1CDFF;
+      --good:#4ADE94;
+      --good-soft:#183226;
+      --warn:#F5A855;
+      --warn-soft:#3A2812;
+      --code-bg:#0B0D12;
+      --code-ink:#D9E1F1;
+      --code-accent:#9FBBFF;
+      --border:#2C3242;
+      --shadow: 0 1px 2px rgba(0,0,0,.35), 0 8px 24px -12px rgba(0,0,0,.55);
+    }
+  }
+  :root[data-theme="dark"]{
+    --bg:#12141A;
+    --surface:#1B1F29;
+    --surface-2:#222736;
+    --ink:#E7E9EE;
+    --ink-soft:#9AA3B2;
+    --accent:#7C9BFF;
+    --accent-soft:#242B44;
+    --accent-ink:#C1CDFF;
+    --good:#4ADE94;
+    --good-soft:#183226;
+    --warn:#F5A855;
+    --warn-soft:#3A2812;
+    --code-bg:#0B0D12;
+    --code-ink:#D9E1F1;
+    --code-accent:#9FBBFF;
+    --border:#2C3242;
+    --shadow: 0 1px 2px rgba(0,0,0,.35), 0 8px 24px -12px rgba(0,0,0,.55);
+  }
+
+  *{box-sizing:border-box;}
+  body{
+    background:var(--bg);
+    color:var(--ink);
+    font-family:var(--font-body);
+    padding:0 20px;
+  }
+  main{
+    max-width:920px;
+    margin:0 auto;
+    padding-block:48px 64px;
+  }
+  h1,h2,h3{font-family:var(--font-display); text-wrap:balance; margin:0;}
+  p{margin:0; line-height:1.6;}
+  .eyebrow{
+    font-family:var(--font-mono);
+    font-size:12.5px;
+    letter-spacing:.09em;
+    text-transform:uppercase;
+    color:var(--accent-ink);
+    font-weight:600;
+  }
+
+  /* ---------- Hero ---------- */
+  header.hero{
+    display:flex; flex-direction:column; gap:14px;
+    padding-block:4px 8px;
+  }
+  header.hero h1{
+    font-size:clamp(30px,5vw,44px);
+    font-weight:800;
+    color:var(--ink);
+    line-height:1.08;
+  }
+  header.hero .sub{
+    font-size:16.5px;
+    color:var(--ink-soft);
+    max-width:62ch;
+    line-height:1.65;
+  }
+  .stat-row{
+    display:flex; flex-wrap:wrap; gap:10px;
+    margin-top:6px;
+  }
+  .stat-chip{
+    display:flex; align-items:baseline; gap:6px;
+    background:var(--surface);
+    border:1px solid var(--border);
+    border-radius:999px;
+    padding:8px 14px;
+    box-shadow:var(--shadow);
+    font-size:13px;
+    color:var(--ink-soft);
+  }
+  .stat-chip b{
+    font-family:var(--font-display);
+    font-size:15px;
+    color:var(--ink);
+    font-weight:700;
+  }
+
+  /* ---------- Section shell ---------- */
+  section{margin-top:52px;}
+  .section-head{
+    display:flex; flex-direction:column; gap:6px;
+    margin-bottom:20px;
+  }
+  .section-head h2{
+    font-size:23px; font-weight:700; color:var(--ink);
+  }
+  .section-head .desc{
+    color:var(--ink-soft); font-size:14.5px; max-width:64ch;
+  }
+
+  /* ---------- Idea strip ---------- */
+  .idea-strip{
+    display:grid;
+    grid-template-columns:repeat(3,1fr);
+    gap:2px;
+    background:var(--border);
+    border:1px solid var(--border);
+    border-radius:14px;
+    overflow:hidden;
+    box-shadow:var(--shadow);
+  }
+  .idea-step{
+    background:var(--surface);
+    padding:20px 18px;
+    display:flex; flex-direction:column; gap:8px;
+  }
+  .idea-step .tag{
+    font-family:var(--font-mono);
+    font-size:11px;
+    font-weight:600;
+    color:var(--accent-ink);
+    background:var(--accent-soft);
+    width:max-content;
+    padding:3px 9px;
+    border-radius:6px;
+    letter-spacing:.04em;
+  }
+  .idea-step h3{font-size:16px; font-weight:700;}
+  .idea-step code{
+    font-family:var(--font-mono);
+    font-size:12.5px;
+    color:var(--ink-soft);
+  }
+  .idea-step p{font-size:13.5px; color:var(--ink-soft);}
+
+  /* ---------- Diagram ---------- */
+  figure.diagram{
+    margin:0;
+    background:var(--surface);
+    border:1px solid var(--border);
+    border-radius:16px;
+    padding:20px 18px 16px;
+    box-shadow:var(--shadow);
+  }
+  figure.diagram .scroll{overflow-x:auto;}
+  figure.diagram svg{display:block; min-width:640px; width:100%; height:auto;}
+  figure.diagram figcaption{
+    margin-top:14px;
+    font-size:13px;
+    color:var(--ink-soft);
+    line-height:1.55;
+  }
+  .diag-box-fill{fill:var(--surface);}
+  .diag-box-fill.raised{fill:var(--accent-soft);}
+  .diag-stroke{stroke:var(--ink-soft); fill:none;}
+  .diag-stroke.hot{stroke:var(--accent);}
+  .diag-text{fill:var(--ink); font-family:var(--font-body);}
+  .diag-label{fill:var(--ink-soft); font-family:var(--font-mono);}
+  .diag-phase{fill:var(--ink-soft); font-family:var(--font-mono); font-weight:600; letter-spacing:.06em;}
+  .diag-connector-bg{fill:var(--accent-soft);}
+  .diag-connector-text{fill:var(--accent-ink); font-family:var(--font-mono); font-weight:600;}
+
+  /* ---------- Notebook cells ---------- */
+  .cell-grid{
+    display:grid;
+    grid-template-columns:repeat(2,1fr);
+    gap:14px;
+  }
+  .cell-card{
+    background:var(--surface);
+    border:1px solid var(--border);
+    border-radius:12px;
+    box-shadow:var(--shadow);
+    overflow:hidden;
+    display:flex; flex-direction:column;
+  }
+  .cell-card .cell-head{
+    display:flex; align-items:center; gap:10px;
+    padding:13px 16px 11px;
+  }
+  .cell-num{
+    font-family:var(--font-mono);
+    font-size:12px; font-weight:600;
+    color:var(--accent-ink);
+    background:var(--accent-soft);
+    border-radius:6px;
+    padding:2px 8px;
+    white-space:nowrap;
+  }
+  .cell-card h3{font-size:14.5px; font-weight:700;}
+  .cell-code{
+    background:var(--code-bg);
+    color:var(--code-ink);
+    font-family:var(--font-mono);
+    font-size:12px;
+    line-height:1.6;
+    padding:11px 16px;
+    overflow-x:auto;
+    white-space:pre;
+  }
+  .cell-code .tok{color:var(--code-accent);}
+  .cell-card .cell-why{
+    padding:12px 16px 15px;
+    font-size:13px;
+    color:var(--ink-soft);
+    line-height:1.55;
+  }
+
+  /* ---------- Troubleshooting ---------- */
+  .fix-list{display:flex; flex-direction:column; gap:10px;}
+  .fix-row{
+    display:grid;
+    grid-template-columns:minmax(180px,260px) 1fr;
+    gap:4px 18px;
+    background:var(--surface);
+    border:1px solid var(--border);
+    border-left:3px solid var(--warn);
+    border-radius:10px;
+    padding:13px 16px;
+    box-shadow:var(--shadow);
+  }
+  .fix-row .symptom{
+    font-family:var(--font-mono);
+    font-size:12.5px;
+    color:var(--warn);
+    font-weight:600;
+    line-height:1.5;
+  }
+  .fix-row .fix{font-size:13.5px; color:var(--ink); line-height:1.55;}
+
+  /* ---------- Glossary ---------- */
+  .glossary{
+    display:grid;
+    grid-template-columns:repeat(2,1fr);
+    gap:2px;
+    background:var(--border);
+    border:1px solid var(--border);
+    border-radius:14px;
+    overflow:hidden;
+    box-shadow:var(--shadow);
+  }
+  .glossary dl{
+    margin:0;
+    background:var(--surface);
+    padding:14px 16px;
+    display:flex; flex-direction:column; gap:3px;
+  }
+  .glossary dt{
+    font-family:var(--font-mono);
+    font-size:12.5px; font-weight:600;
+    color:var(--ink);
+  }
+  .glossary dd{
+    margin:0; font-size:12.5px; color:var(--ink-soft); line-height:1.5;
+  }
+
+  footer{
+    margin-top:56px;
+    padding-top:20px;
+    border-top:1px solid var(--border);
+    display:flex; flex-wrap:wrap; gap:8px 16px;
+    align-items:baseline;
+    font-size:12.5px;
+    color:var(--ink-soft);
+  }
+  footer a{color:var(--accent-ink);}
+
+  @media (max-width:640px){
+    main{padding-block:32px 48px;}
+    .idea-strip{grid-template-columns:1fr;}
+    .cell-grid{grid-template-columns:1fr;}
+    .glossary{grid-template-columns:1fr;}
+    .fix-row{grid-template-columns:1fr;}
+  }
+</style>
+</head>
+<body>
+<main>
+
+  <header class="hero">
+    <span class="eyebrow">Prompt to Power &middot; Colab companion</span>
+    <h1>Policy Assistant Notebook</h1>
+    <p class="sub">A plain-English walkthrough of every cell in <code style="font-family:var(--font-mono)">Company_Policy_Assistant_RAG.ipynb</code> &mdash; what it does, why it's there in that order, and how to fix it when a cell misbehaves.</p>
+    <div class="stat-row">
+      <span class="stat-chip"><b>8</b>&nbsp;code cells</span>
+      <span class="stat-chip"><b>2</b>&nbsp;scripts &mdash; build_index.py &amp; app.py</span>
+      <span class="stat-chip"><b>0</b>&nbsp;agents or tools &mdash; plain retrieve&nbsp;&rarr;&nbsp;augment&nbsp;&rarr;&nbsp;generate</span>
+      <span class="stat-chip"><b>Free</b>&nbsp;to run &mdash; no API key, fully local</span>
+    </div>
+  </header>
+
+  <section id="idea">
+    <div class="section-head">
+      <h2>The idea in one sentence</h2>
+      <p class="desc">Every question goes through the exact same three steps, in the exact same order &mdash; nothing decides anything.</p>
+    </div>
+    <div class="idea-strip">
+      <div class="idea-step">
+        <span class="tag">01 &middot; RETRIEVE</span>
+        <h3>Search the PDF</h3>
+        <code>retrieve_context(vector_db, question, k=3)</code>
+        <p>Finds the 3 chunks of company_policy.pdf whose meaning is closest to the question.</p>
+      </div>
+      <div class="idea-step">
+        <span class="tag">02 &middot; AUGMENT</span>
+        <h3>Build the prompt</h3>
+        <code>ask_llm(llm_pipeline, context, question)</code>
+        <p>Pastes those 3 chunks and the question into one prompt, alongside the system rules.</p>
+      </div>
+      <div class="idea-step">
+        <span class="tag">03 &middot; GENERATE</span>
+        <h3>Ask the LLM</h3>
+        <code>llm_pipeline(messages, ...)</code>
+        <p>A local Hugging Face model (Qwen2.5-1.5B-Instruct) answers using only the pasted policy text &mdash; no API, no key.</p>
+      </div>
+    </div>
+  </section>
+
+  <section id="pipeline">
+    <div class="section-head">
+      <h2>How the two scripts connect</h2>
+      <p class="desc">build_index.py runs once and writes a searchable index to disk. app.py runs on every question and only ever reads that index &mdash; it never re-opens the PDF.</p>
+    </div>
+    <figure class="diagram">
+      <div class="scroll">
+        <svg viewBox="0 0 980 400" role="img" aria-label="Diagram: build_index.py turns company_policy.pdf into chunks, then embeddings, then a saved faiss_index folder. app.py takes a question, searches that same faiss_index for the top 3 matching chunks, builds a prompt from them, runs it through a local Hugging Face pipeline (Qwen2.5-1.5B-Instruct), and shows the answer in the chat.">
+          <defs>
+            <marker id="arrow" viewBox="0 0 10 10" refX="8" refY="5" markerWidth="7" markerHeight="7" orient="auto-start-reverse">
+              <path d="M0,0 L10,5 L0,10 z" fill="var(--ink-soft)"></path>
+            </marker>
+            <marker id="arrowHot" viewBox="0 0 10 10" refX="8" refY="5" markerWidth="7" markerHeight="7" orient="auto-start-reverse">
+              <path d="M0,0 L10,5 L0,10 z" fill="var(--accent)"></path>
+            </marker>
+          </defs>
+
+          <!-- Phase A label -->
+          <text x="20" y="48" class="diag-phase" font-size="12">PHASE A &mdash; build_index.py&nbsp;&nbsp;(run once, Cell 4)</text>
+
+          <!-- Row A boxes -->
+          <g>
+            <rect x="20" y="70" width="190" height="64" rx="10" class="diag-box-fill diag-stroke"></rect>
+            <text x="115" y="97" text-anchor="middle" class="diag-text" font-size="12.5" font-weight="600">company_policy.pdf</text>
+            <text x="115" y="115" text-anchor="middle" class="diag-label" font-size="10.5">text, or OCR if scanned</text>
+          </g>
+          <line x1="210" y1="102" x2="252" y2="102" class="diag-stroke" stroke-width="1.6" marker-end="url(#arrow)"></line>
+
+          <g>
+            <rect x="256" y="70" width="200" height="64" rx="10" class="diag-box-fill diag-stroke"></rect>
+            <text x="356" y="97" text-anchor="middle" class="diag-text" font-size="12.5" font-weight="600">chunks</text>
+            <text x="356" y="115" text-anchor="middle" class="diag-label" font-size="10.5">~500 chars, 50 overlap</text>
+          </g>
+          <line x1="456" y1="102" x2="498" y2="102" class="diag-stroke" stroke-width="1.6" marker-end="url(#arrow)"></line>
+
+          <g>
+            <rect x="502" y="70" width="190" height="64" rx="10" class="diag-box-fill diag-stroke"></rect>
+            <text x="597" y="97" text-anchor="middle" class="diag-text" font-size="12.5" font-weight="600">embeddings</text>
+            <text x="597" y="115" text-anchor="middle" class="diag-label" font-size="10.5">MiniLM-L6, local &amp; free</text>
+          </g>
+          <line x1="692" y1="102" x2="734" y2="102" class="diag-stroke" stroke-width="1.6" marker-end="url(#arrow)"></line>
+
+          <g>
+            <rect x="738" y="70" width="202" height="64" rx="10" class="diag-box-fill raised" stroke="var(--accent)" stroke-width="2"></rect>
+            <text x="839" y="97" text-anchor="middle" class="diag-text" font-size="12.5" font-weight="700">faiss_index/</text>
+            <text x="839" y="115" text-anchor="middle" class="diag-connector-text" font-size="10.5">saved to disk</text>
+          </g>
+
+          <!-- Connector -->
+          <path d="M839,134 V206 H356 V286" class="diag-stroke hot" stroke-width="1.8" fill="none" marker-end="url(#arrowHot)"></path>
+          <rect x="470" y="192" width="270" height="28" rx="14" class="diag-connector-bg"></rect>
+          <text x="605" y="210" text-anchor="middle" class="diag-connector-text" font-size="11">loaded once &middot; searched every question</text>
+
+          <!-- Phase B label -->
+          <text x="20" y="268" class="diag-phase" font-size="12">PHASE B &mdash; app.py&nbsp;&nbsp;(every question, Cells 5&ndash;6)</text>
+
+          <!-- Row B boxes -->
+          <g>
+            <rect x="20" y="290" width="190" height="64" rx="10" class="diag-box-fill diag-stroke"></rect>
+            <text x="115" y="317" text-anchor="middle" class="diag-text" font-size="12.5" font-weight="600">your question</text>
+            <text x="115" y="335" text-anchor="middle" class="diag-label" font-size="10.5">typed in the chat box</text>
+          </g>
+          <line x1="210" y1="322" x2="252" y2="322" class="diag-stroke" stroke-width="1.6" marker-end="url(#arrow)"></line>
+
+          <g>
+            <rect x="256" y="290" width="200" height="64" rx="10" class="diag-box-fill raised" stroke="var(--accent)" stroke-width="2"></rect>
+            <text x="356" y="317" text-anchor="middle" class="diag-text" font-size="12.5" font-weight="700">top-3 matching chunks</text>
+            <text x="356" y="335" text-anchor="middle" class="diag-connector-text" font-size="10.5">similarity_search(k=3)</text>
+          </g>
+          <line x1="456" y1="322" x2="498" y2="322" class="diag-stroke" stroke-width="1.6" marker-end="url(#arrow)"></line>
+
+          <g>
+            <rect x="502" y="290" width="190" height="64" rx="10" class="diag-box-fill diag-stroke"></rect>
+            <text x="597" y="317" text-anchor="middle" class="diag-text" font-size="12.5" font-weight="600">prompt to local LLM</text>
+            <text x="597" y="335" text-anchor="middle" class="diag-label" font-size="10.5">rules + chunks + question</text>
+          </g>
+          <line x1="692" y1="322" x2="734" y2="322" class="diag-stroke" stroke-width="1.6" marker-end="url(#arrow)"></line>
+
+          <g>
+            <rect x="738" y="290" width="202" height="64" rx="10" class="diag-box-fill diag-stroke"></rect>
+            <text x="839" y="317" text-anchor="middle" class="diag-text" font-size="12.5" font-weight="600">answer in chat</text>
+            <text x="839" y="335" text-anchor="middle" class="diag-label" font-size="10.5">Qwen2.5-1.5B, running locally</text>
+          </g>
+        </svg>
+      </div>
+      <figcaption>build_index.py (top row) turns the PDF into a saved faiss_index/ folder once. app.py (bottom row) never touches the PDF again &mdash; every question just searches that saved index, builds a prompt from the top 3 matches, and runs it through a Hugging Face model loaded locally in the same Colab session.</figcaption>
+    </figure>
+  </section>
+
+  <section id="cells">
+    <div class="section-head">
+      <h2>Cell by cell</h2>
+      <p class="desc">Run these in order, top to bottom. Colab clears its files whenever the runtime disconnects, so a fresh session means re-running from Cell&nbsp;1.</p>
+    </div>
+    <div class="cell-grid">
+
+      <div class="cell-card">
+        <div class="cell-head"><span class="cell-num">Cell 1</span><h3>Install dependencies</h3></div>
+        <div class="cell-code">!pip install streamlit langchain-community <span class="tok">\</span>
+  langchain-huggingface faiss-cpu transformers torch accelerate
+!apt-get -qq install -y tesseract-ocr poppler-utils</div>
+        <div class="cell-why">Python packages plus the two system tools (OCR engine + PDF renderer) that build_index.py needs for scanned pages.</div>
+      </div>
+
+      <div class="cell-card">
+        <div class="cell-head"><span class="cell-num">Cell 2</span><h3>Upload the PDF</h3></div>
+        <div class="cell-code"><span class="tok">from</span> google.colab <span class="tok">import</span> files
+uploaded = files.upload()</div>
+        <div class="cell-why">Opens a file picker. Select company_policy.pdf &mdash; or your own policy PDF, renamed to match.</div>
+      </div>
+
+      <div class="cell-card">
+        <div class="cell-head"><span class="cell-num">Cell 3</span><h3>Write build_index.py</h3></div>
+        <div class="cell-code"><span class="tok">%%writefile</span> build_index.py
+<span class="tok">\</span> &hellip; OCR fallback, chunking, embeddings &hellip;</div>
+        <div class="cell-why">Saves the index-building script to disk inside Colab so the next cell can run it as a normal program.</div>
+      </div>
+
+      <div class="cell-card">
+        <div class="cell-head"><span class="cell-num">Cell 4</span><h3>Build the index</h3></div>
+        <div class="cell-code">!python build_index.py
+<span class="tok">&gt;</span> FAISS DATABASE CREATED</div>
+        <div class="cell-why">The only cell that reads the PDF. Creates faiss_index/ &mdash; everything after this only reads that folder.</div>
+      </div>
+
+      <div class="cell-card">
+        <div class="cell-head"><span class="cell-num">Cell 5</span><h3>Write app.py</h3></div>
+        <div class="cell-code"><span class="tok">%%writefile</span> app.py
+<span class="tok">\</span> &hellip; retrieve_context(), ask_llm() &hellip;</div>
+        <div class="cell-why">Saves the chat app &mdash; the retrieve &rarr; augment &rarr; generate logic, with no agent deciding steps. The LLM itself (Qwen2.5-1.5B-Instruct) downloads automatically the first time it runs.</div>
+      </div>
+
+      <div class="cell-card">
+        <div class="cell-head"><span class="cell-num">Cell 6</span><h3>Launch Streamlit</h3></div>
+        <div class="cell-code">!streamlit run app.py <span class="tok">&amp;&gt;</span>/content/logs.txt &amp;</div>
+        <div class="cell-why">Starts the app in the background on port 8501, inside the Colab machine. The first question is slow &mdash; that's the local model loading &mdash; then it stays warm for the rest of the session.</div>
+      </div>
+
+      <div class="cell-card">
+        <div class="cell-head"><span class="cell-num">Cell 7</span><h3>Open a tunnel</h3></div>
+        <div class="cell-code">!npx localtunnel --port 8501
+<span class="tok">&gt;</span> https://short-words-123.loca.lt</div>
+        <div class="cell-why">Colab has no public address of its own. localtunnel hands you one &mdash; click the printed link.</div>
+      </div>
+
+      <div class="cell-card">
+        <div class="cell-head"><span class="cell-num">Cell 8</span><h3>Get the tunnel password</h3></div>
+        <div class="cell-code">!curl ipv4.icanhazip.com
+<span class="tok">&gt;</span> 34.90.xxx.xxx</div>
+        <div class="cell-why">The tunnel page asks for a password before showing the app &mdash; it's just this IP address. Paste it in, then chat.</div>
+      </div>
+
+    </div>
+  </section>
+
+  <section id="fix">
+    <div class="section-head">
+      <h2>When something breaks</h2>
+    </div>
+    <div class="fix-list">
+      <div class="fix-row">
+        <div class="symptom">"Couldn't find the 'faiss_index' folder"</div>
+        <div class="fix">Cell 4 didn't finish, or the runtime restarted since it ran. Re-run Cells 3 and 4 before touching the app again.</div>
+      </div>
+      <div class="fix-row">
+        <div class="symptom">Tunnel link won't load</div>
+        <div class="fix">Streamlit (Cell 6) may still be starting &mdash; wait ~10 seconds and refresh, or run <code style="font-family:var(--font-mono)">!cat /content/logs.txt</code> to see the actual error.</div>
+      </div>
+      <div class="fix-row">
+        <div class="symptom">Tunnel URL changed since last time</div>
+        <div class="fix">Expected &mdash; every run of Cell 7 prints a new link. Share the newest one, not an old one from an earlier session.</div>
+      </div>
+      <div class="fix-row">
+        <div class="symptom">Answers take 30&ndash;90 seconds, app looks frozen</div>
+        <div class="fix">Normal on a free CPU runtime &mdash; the model is generating token by token with no GPU. For much faster answers: Runtime &rarr; Change runtime type &rarr; T4 GPU, then re-run from Cell 1.</div>
+      </div>
+      <div class="fix-row">
+        <div class="symptom">Session crashes / "out of memory" while loading the model</div>
+        <div class="fix">The free CPU runtime occasionally runs low on RAM for the model download. Runtime &rarr; Restart session, then re-run from Cell 1 &mdash; a GPU runtime usually has more headroom too.</div>
+      </div>
+    </div>
+  </section>
+
+  <section id="glossary">
+    <div class="section-head">
+      <h2>Terms used above</h2>
+    </div>
+    <div class="glossary">
+      <dl><dt>Chunk</dt><dd>A ~500-character slice of the PDF. Small enough to search precisely, large enough to keep context.</dd></dl>
+      <dl><dt>Embedding</dt><dd>A list of numbers that captures what a chunk of text means, so "similar meaning" becomes "nearby numbers."</dd></dl>
+      <dl><dt>FAISS index</dt><dd>A file on disk holding every chunk's embedding, built for fast "find the closest ones" search.</dd></dl>
+      <dl><dt>Similarity search</dt><dd>Comparing the question's embedding against every chunk's embedding and keeping the top 3 matches.</dd></dl>
+      <dl><dt>System prompt</dt><dd>Standing instructions sent with every question &mdash; here, "only answer from the text I give you."</dd></dl>
+      <dl><dt>Tunnel</dt><dd>A temporary public URL that forwards to the Streamlit app running inside the private Colab machine.</dd></dl>
+      <dl><dt>HF pipeline</dt><dd>Hugging Face's <code style="font-family:var(--font-mono)">transformers.pipeline(...)</code> &mdash; downloads a model and runs it locally, no API or key. What Cell&nbsp;5's app.py uses to generate answers.</dd></dl>
+    </div>
+  </section>
+
+  <footer>
+    <span>Companion to <code style="font-family:var(--font-mono)">Company_Policy_Assistant_RAG.ipynb</code> &middot; Prompt to Power workshop.</span>
+    <span>Curious how retrieval works underneath? See <a href="https://claude.ai/artifact/9r9gvvzXt3xrVhvXBNCe9L">How RAG Thinks</a>.</span>
+  </footer>
+
+</main>
+</body>
+</html>
