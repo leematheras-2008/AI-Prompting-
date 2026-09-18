@@ -1,0 +1,42 @@
+## Company Policy Assistant — Simple RAG in Google Colab
+
+This project implements a plain Retrieval-Augmented Generation (RAG) application within Google Colab, designed to answer questions based on a company policy PDF. It distinguishes itself by relying entirely on local, open-source models, eliminating the need for any API keys or external LLM services.
+
+### How it Works:
+
+The RAG process follows three consistent steps for every query:
+
+1.  **Retrieve**: The system searches a pre-built vector database (FAISS index) for chunks of the PDF that are most relevant to the user's question.
+2.  **Augment**: These retrieved PDF chunks are then used to augment a prompt, providing the Large Language Model (LLM) with direct context from the policy document.
+3.  **Generate**: A Hugging Face model, running locally, processes the augmented prompt to generate an answer. The model is instructed to use the policy text when relevant and fall back to its general knowledge for other types of questions.
+
+### Key Features:
+
+*   **Local Execution**: Both the embedding model and the answer-writing LLM run directly within your Colab session. No API keys or external services are required.
+*   **OCR Fallback**: The PDF processing includes an OCR (Optical Character Recognition) fallback, allowing the system to extract text from scanned PDF pages that lack a text layer.
+*   **Streamlined Process**: The notebook guides you through installing dependencies, uploading your PDF, building the searchable index, and launching the chat application.
+*   **Reproducible**: Colab resets its files on runtime disconnect, so the notebook is designed for easy re-execution from top to bottom.
+
+### Setup and Usage:
+
+Follow the cells in the Google Colab notebook in order:
+
+1.  **Install Dependencies**: Run the cell to install necessary Python packages (`streamlit`, `langchain-community`, `transformers`, `faiss-cpu`, `pypdf`, `pytesseract`, etc.) and system tools (`tesseract-ocr`, `poppler-utils`).
+2.  **Upload your `company_policy.pdf`**: Use the file picker to upload your company policy document. If your file has a different name, rename it to `company_policy.pdf` or update the `PDF_FILE` variable in `build_index.py`.
+3.  **Write `build_index.py`**: This cell creates the `build_index.py` script, responsible for processing your PDF into a searchable vector database.
+4.  **Build the Vector Database**: Execute `!python build_index.py`. This script reads the PDF, performs OCR if necessary, splits the text into chunks, embeds them using a local embedding model, and saves the `faiss_index/` folder.
+5.  **Write `app.py`**: This cell generates the `app.py` script, which contains the Streamlit application logic for the RAG chatbot.
+6.  **Launch Streamlit in the Background**: Run `!streamlit run app.py &>/content/logs.txt &`. This starts the Streamlit app in the background.
+7.  **Expose with a Public Tunnel**: Execute `!npx localtunnel --port 8501`. This will provide a public URL (e.g., `https://short-words-123.loca.lt`) to access your Streamlit app in a new browser tab.
+8.  **Get the Tunnel Password**: Run `!curl ipv4.icanhazip.com` to get the public IP address of your Colab runtime, which acts as the password for the localtunnel URL.
+
+### Performance Note:
+
+On a free Colab CPU runtime, each answer can take 30–90 seconds, with the very first question potentially taking longer as the LLM downloads and loads into memory. For significantly faster responses, consider switching your Colab runtime to a T4 GPU (**Runtime → Change runtime type → T4 GPU**) and re-run the notebook from Cell 1.
+
+### Troubleshooting:
+
+*   **"Couldn't find the 'faiss_index' folder"**: Re-run Cells 3–4 to ensure the vector database is built correctly.
+*   **Tunnel link doesn't load**: Streamlit might still be starting. Wait ~10 seconds and refresh, or check `/content/logs.txt` (`!cat /content/logs.txt`) for errors.
+*   **Answers are slow / app looks frozen**: This is normal on a free CPU. Consider switching to a T4 GPU runtime.
+*   **"Out of memory"**: Restart the Colab session (**Runtime → Restart session**) and re-run from Cell 1. Switching to a GPU runtime can also help with memory headroom.
